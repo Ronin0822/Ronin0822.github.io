@@ -346,9 +346,45 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href="/2019/01/26/缓存相关/">
+            
+                <span>缓存相关</span>
+        </a>
+        <div class="abstract-content">
+            缓存相关缓存存在的问题缓存与数据库双写不一致
+一般流程：
+读的时候，先读缓存，缓存没有的话，就读数据库，然后取出数据后放入缓存，同时返回结果
+更新的时候，先更新数据库，然后再删除缓存
+
+
+为什么是删除缓存，而不是更新缓存
+
+类似一种懒加载，如果频繁更新缓存，而这些缓存的查询量不大的话，就没必要了，等到要查缓存的时候再到数据库里查询最新的数据，更新缓存。不过也看业务需求，如果不会频繁更新的话，可以选择更新缓存，这样保证用户查询数据都很快，保证用户体验
+
+
+产生原因：
+
+一般流程是先修改数据库，再删除或者更新缓存。那么如果删除或更新缓存失败了，就会导致数据库中是新数据，缓存中是旧数据，数据就...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/01/26</span>
+            </div>
+            <!-- tags  -->
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href="/2018/12/05/hello-world/">
             
-                <span>Hello World</span>
+                <span>Hello</span>
         </a>
         <div class="abstract-content">
             Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
@@ -468,9 +504,16 @@ More...
     
     
     
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 1
+        Total : 2
         </div>
         <!-- search  -->
         
@@ -481,12 +524,26 @@ More...
     
     
     
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/26</span><a class="archive-post-title" href="/2019/01/26/缓存相关/">缓存相关</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
     <div class="archive-year"> 2018 </div>
     <ul class="year-list">
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">12/05</span><a class="archive-post-title" href="/2018/12/05/hello-world/">Hello World</a>
+            <span class="archive-post-date">12/05</span><a class="archive-post-title" href="/2018/12/05/hello-world/">Hello</a>
         </li>
     
     </ul></div>

@@ -16,7 +16,7 @@
     <meta name="description" content="long time no see">
     
     <title>
-      Archives2018 - Ronin&#39;s blog
+      hexo从零开始到搭建完整 - Ronin&#39;s blog
     </title>
     <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
@@ -24,6 +24,11 @@
   </head>
   <body>
     <canvas id="pagemap"></canvas>
+    
+    <div id="post-toc" class="animated hiddenToc hide">
+      <span class="title">Toc</span>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick-Start"><span class="toc-text">Quick Start</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-安装Git-Bash"><span class="toc-text">1.安装Git Bash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-安装NodeJs"><span class="toc-text">2.安装NodeJs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-安装hexo"><span class="toc-text">3.安装hexo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-部署hexo"><span class="toc-text">4.部署hexo</span></a></li></ol></li></ol>
+    </div>
     
     <div id="fixed-menu-wrap">
       <span class="iconfont icon-sousuo search-box menu-reset"></span>
@@ -58,7 +63,7 @@
           Home
         </a>
         
-        <a href="/archives" class="current">
+        <a href="/archives" class="">
           Archives
         </a>
         
@@ -112,7 +117,7 @@
             Home
           </a>
           
-          <a href="/archives" class="current">
+          <a href="/archives" class="">
             Archives
           </a>
           
@@ -161,43 +166,107 @@
     </div>
     <div id="container">
       <div class="main animated bounceInRight delay-0.7s">
-        <div id="archives">
-    
-        <div class="title">
-            Archives 
-             - 2018
-        </div>
-    
-
-
-
-
-    
-    
-    <section class="wrap">
-        <div class="meta">
-            <a href="/archives/2018">
-                2018
-            </a>
-        </div>
-        <div class="year">
-            
-            <article class="item">
-            <a href="/2018/12/05/hexo从零开始到搭建完整/" title="hexo从零开始到搭建完整">
-                <span>2018/12/05</span>
-                <span>hexo从零开始到搭建完整</span>
-            </a>
-            </article>
-            
-    
-        </div>
-    </section>
+        <article class="post-entry">
+    <div class="header">
       
-<div class="paginator">
-    <span class="page-number current">1</span>
-</div>
-</div>
+      <div class="title">hexo从零开始到搭建完整</div>
+      <div class="meta">
+        <span class="item">
+          <span class="iconfont icon-time-circle"></span>
+          <span>2018/12/05</span>
+        </span>
 
+        
+
+        
+        
+        
+      </div>
+      <div>
+      </div>
+    </div>
+    <h2 id="Quick-Start">Quick Start<a class="post-anchor" href="#Quick-Start"></a></h2><h3 id="1-安装Git-Bash">1.安装Git Bash<a class="post-anchor" href="#1-安装Git-Bash"></a></h3><ul>
+<li>下载地址：<a href="https://git-for-windows.github.io/" target="_blank" rel="noopener">https://git-for-windows.github.io/</a></li>
+</ul>
+<h3 id="2-安装NodeJs">2.安装NodeJs<a class="post-anchor" href="#2-安装NodeJs"></a></h3><ul>
+<li>下载地址：<a href="https://nodejs.org/en/" target="_blank" rel="noopener">https://nodejs.org/en/</a></li>
+</ul>
+<h3 id="3-安装hexo">3.安装hexo<a class="post-anchor" href="#3-安装hexo"></a></h3><ul>
+<li>先创建一个文件夹（用来存放所有blog的东西），然后cd到该文件夹下。</li>
+<li>安装hexo命令：npm i -g hexo</li>
+<li>安装完成后，查看版本：<br><a href="../images/hexo从零开始到搭建完整/5.png" data-caption="" data-fancybox="images"><img src="../images/hexo从零开始到搭建完整/5.png" alt=""></a></li>
+<li>初始化命令：hexo init ，初始化完成之后打开所在的文件夹可以看到以下文件：<br><a href="../images/hexo从零开始到搭建完整/6.jpg" data-caption="" data-fancybox="images"><img src="../images/hexo从零开始到搭建完整/6.jpg" alt=""></a></li>
+<li>解释一下：<ul>
+<li>node_modules：是依赖包 </li>
+<li>public：存放的是生成的页面</li>
+<li>scaffolds：命令生成文章等的模板</li>
+<li>source：用命令创建的各种文章</li>
+<li>themes：主题</li>
+<li>_config.yml：整个博客的配置</li>
+<li>db.json：source解析所得到的</li>
+<li>package.json：项目所需模块项目的配置信息</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-部署hexo">4.部署hexo<a class="post-anchor" href="#4-部署hexo"></a></h3><ul>
+<li>hexo clean  清空</li>
+<li>hexo generate  编译</li>
+<li>hexo server   本地部署</li>
+<li>hexo deploy 推到远程仓库</li>
+</ul>
+
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
+            </div>
+            
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+          <a href="/2019/01/26/缓存相关/">缓存相关</a>
+        
+    </div>
+    <div class="item right">
+        
+    </div>
+  </div>
+
+  
+
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">Ruying</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git/2018/12/05/hexo从零开始到搭建完整/">https://github.com/Ronin0822/Ronin0822.github.io.git/2018/12/05/hexo从零开始到搭建完整/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">Ruying</a>的博客，转载请注明出处！
+    </div>
+  </div>
+
+  <div id="comment"></div>
+
+  
+  
+</article>
         <footer>
           <div class="copyright">
             ©2020

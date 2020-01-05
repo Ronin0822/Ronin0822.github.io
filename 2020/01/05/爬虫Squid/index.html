@@ -16,7 +16,7 @@
     <meta name="description" content="long time no see">
     
     <title>
-      Archives2018 - Ronin&#39;s blog
+      爬虫Squid - Ronin&#39;s blog
     </title>
     <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" href="/images/ironMan.png" type="image/x-icon">
@@ -24,6 +24,11 @@
   </head>
   <body>
     <canvas id="pagemap"></canvas>
+    
+    <div id="post-toc" class="animated hiddenToc hide">
+      <span class="title">Toc</span>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Squid安装"><span class="toc-text">Squid安装</span></a></li></ol>
+    </div>
     
     <div id="fixed-menu-wrap">
       <span class="iconfont icon-sousuo search-box menu-reset"></span>
@@ -58,7 +63,7 @@
           Home
         </a>
         
-        <a href="/archives" class="current">
+        <a href="/archives" class="">
           Archives
         </a>
         
@@ -112,7 +117,7 @@
             Home
           </a>
           
-          <a href="/archives" class="current">
+          <a href="/archives" class="">
             Archives
           </a>
           
@@ -161,43 +166,101 @@
     </div>
     <div id="container">
       <div class="main animated bounceInRight delay-0.7s">
-        <div id="archives">
-    
-        <div class="title">
-            Archives 
-             - 2018
-        </div>
-    
-
-
-
-
-    
-    
-    <section class="wrap">
-        <div class="meta">
-            <a href="/archives/2018">
-                2018
-            </a>
-        </div>
-        <div class="year">
-            
-            <article class="item">
-            <a href="/2018/12/05/hexo从零开始到搭建完整/" title="hexo从零开始到搭建完整">
-                <span>2018/12/05</span>
-                <span>hexo从零开始到搭建完整</span>
-            </a>
-            </article>
-            
-    
-        </div>
-    </section>
+        <article class="post-entry">
+    <div class="header">
       
-<div class="paginator">
-    <span class="page-number current">1</span>
-</div>
-</div>
+      <div class="title">爬虫Squid</div>
+      <div class="meta">
+        <span class="item">
+          <span class="iconfont icon-time-circle"></span>
+          <span>2020/01/05</span>
+        </span>
 
+        
+
+        
+        
+        
+      </div>
+      <div>
+      </div>
+    </div>
+    <h3 id="Squid安装">Squid安装<a class="post-anchor" href="#Squid安装"></a></h3><ul>
+<li><p>修改配置文件/var/squid/squid.conf<br>安装httpd用于生成密码文件<br>yum install -y httpd</p>
+</li>
+<li><p>安装squid<br>yum install -y gcc gcc-c++ libxml2 libxml2-devel openssl openssl-devel<br>yum install -y squid </p>
+</li>
+<li><p>安装pip和python依赖包<br>yum -y install epel-release python-pip<br>pip install kazoo logging apscheduler</p>
+</li>
+<li><p>创建账号密码文件<br>htpasswd -bc /etc/squid/passwords vincent vincent</p>
+</li>
+<li><p>验证密码文件<br>/usr/lib64/squid/basic_ncsa_auth /etc/squid/passwords</p>
+</li>
+<li><p>配置squid.conf<br>(1)修改http_access和http_port<br>(2)auth_param basic program /usr/lib64/squid/basic_ncsa_auth /etc/squid/passwords<br>auth_param basic realm proxy<br>acl authenticated proxy_auth REQUIRED<br>http_access allow authenticated<br>http_access deny all</p>
+</li>
+<li><p>配置高匿<br>request_header_access X-Forwarded-For deny all<br>request_header_access From deny all<br>request_header_access Via deny all</p>
+</li>
+<li><p>初始化squid<br>squid -z</p>
+</li>
+<li><p>启动关闭和开机自启</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 启动</span><br><span class="line">squid -s (或 systemctl start squid)</span><br><span class="line"># 停止</span><br><span class="line">squid -k shutdown (或 systemctl stop squid)</span><br><span class="line"># 设置开机自启</span><br><span class="line">systemctl enable squid</span><br></pre></td></tr></table></figure>
+
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
+            </div>
+            
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+          <a href="/2020/01/05/guava工具/">Guava包中工具类</a>
+        
+    </div>
+    <div class="item right">
+        
+          <a href="/2020/01/05/文件相关命令/">文件相关命令</a>
+        
+    </div>
+  </div>
+
+  
+
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/爬虫Squid/">https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/爬虫Squid/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>的博客，转载请注明出处！
+    </div>
+  </div>
+
+  <div id="comment"></div>
+
+  
+  
+</article>
         <footer>
           <div class="copyright">
             ©2020

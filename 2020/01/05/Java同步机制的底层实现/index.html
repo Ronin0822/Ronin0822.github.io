@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+      <script>
+  var _hmt = _hmt || []
+  ;(function() {
+    var hm = document.createElement('script')
+    hm.src = 'https://hm.baidu.com/hm.js?5a0acc897fd96474a2c8f4deac84611a'
+    var s = document.getElementsByTagName('script')[0]
+    s.parentNode.insertBefore(hm, s)
+  })()
+</script> 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="">
+    <meta name="description" content="long time no see">
+    
+    <title>
+      Java同步机制的底层实现 - Ronin&#39;s blog
+    </title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="shortcut icon" href="/images/ironMan.png" type="image/x-icon">
+    <link rel="stylesheet" href="/style/style.css">
+  </head>
+  <body>
+    <canvas id="pagemap"></canvas>
+    
+    <div id="post-toc" class="animated hiddenToc hide">
+      <span class="title">Toc</span>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#同步机制的核心——AQS"><span class="toc-text">同步机制的核心——AQS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CountDownLatch的实现"><span class="toc-text">CountDownLatch的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CountDownLatch的内部Sync类"><span class="toc-text">CountDownLatch的内部Sync类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CounDownLatch对Sync类对象的使用"><span class="toc-text">CounDownLatch对Sync类对象的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReentrantLock的实现"><span class="toc-text">ReentrantLock的实现</span></a></li></ol></li></ol>
+    </div>
+    
+    <div id="fixed-menu-wrap">
+      <span class="iconfont icon-sousuo search-box menu-reset"></span>
+      <span class="icon-toc menu-reset">Toc</span>
+      <span class="iconfont icon-arrowup menu-reset"></span>
+    </div>
+    <div id="fixed-menu">
+      <span class="iconfont icon-menu-"></span>
+    </div>
+    <div id="progress">
+      <div class="line"></div>
+    </div>
+    <div id="search-shade" class="animated hiddenSearch hide">
+      <div class="input-wrap">
+        <span class="iconfont icon-sousuo search-box"></span>
+        <input type="text" placeholder="Search">
+        <span class="iconfont icon-close"></span>
+      </div>
+      <div class="search-result">
+        <div class="meta">
+          <span><b id="result-count">0</b> results found</span>
+          <img src="/images/logo.jpeg">
+        </div>
+        <ul id="result-box"></ul>
+      </div>
+    </div>
+    <div id="menu-mask" class="animated hideMenuMask hide">
+      <span class="iconfont icon-close"></span>
+      <div class="nav">
+        
+        <a href="/" class="">
+          Home
+        </a>
+        
+        <a href="/archives" class="">
+          Archives
+        </a>
+        
+        <a href="/categories" class="">
+          Categories
+        </a>
+        
+        <a href="/tags" class="">
+          Tags
+        </a>
+        
+        <a href="/friends" class="">
+          Friends
+        </a>
+        
+        <a href="/about" class="">
+          About
+        </a>
+        
+      </div>
+    </div>
+    <div id="header">
+      <div class="intro">
+        <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        <div class="author">如影</div>
+      </div>
+      <div class="nav">
+        <span class="iconfont icon-menu menu-icon"></span>
+        <a href="#" class="search-box">
+          <span class="iconfont icon-sousuo"></span>
+        </a>
+      </div>
+    </div>
+    <div id="side" class="animated bounceInLeft">
+      <div class="shrink">
+        <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        <span class="iconfont icon-menu toggle-icon"></span>
+        <a href="#" class="search-box">
+          <span class="iconfont icon-sousuo"></span>
+        </a>
+      </div>
+      <div class="magnify">
+        <div class="about">
+          <div class="author">如影</div>
+          <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        </div>
+
+        <div class="nav">
+          
+          <a href="/" class="">
+            Home
+          </a>
+          
+          <a href="/archives" class="">
+            Archives
+          </a>
+          
+          <a href="/categories" class="">
+            Categories
+          </a>
+          
+          <a href="/tags" class="">
+            Tags
+          </a>
+          
+          <a href="/friends" class="">
+            Friends
+          </a>
+          
+          <a href="/about" class="">
+            About
+          </a>
+          
+          <a href="#" class="search-box">
+            <span class="iconfont icon-sousuo"></span>
+          </a>
+        </div>
+        <div class="bottom">
+          <div class="follow">
+            
+            <a href="https://github.com/shixiaohu2206" target="_block">
+              <span class="iconfont icon-github"></span>
+            </a>
+            
+            <a href="https://www.facebook.com/shi.xiaohu.5" target="_block">
+              <span class="iconfont icon-facebook"></span>
+            </a>
+            
+            <a href="https://www.instagram.com/shi_xiaohu/" target="_block">
+              <span class="iconfont icon-instagram"></span>
+            </a>
+             
+            <a href="/atom.xml" target="_block">
+              <span class="iconfont icon-rss"></span>
+            </a>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="container">
+      <div class="main animated bounceInRight delay-0.7s">
+        <article class="post-entry">
+    <div class="header">
+      
+      <div class="title">Java同步机制的底层实现</div>
+      <div class="meta">
+        <span class="item">
+          <span class="iconfont icon-time-circle"></span>
+          <span>2020/01/05</span>
+        </span>
+
+        
+
+        
+        
+        
+      </div>
+      <div>
+      </div>
+    </div>
+    <h2 id="同步机制的核心——AQS">同步机制的核心——AQS<a class="post-anchor" href="#同步机制的核心——AQS"></a></h2><ul>
+<li><p>AbstractQueuedSynchronizer类也就是我们所说的AQS，这个类首先像我们上面提到的，是大多数多线程同步工具类的基础。它内部包含了一个对同步器的等待队列，其中包含了所有在等待获取同步器的线程，在这个等待队列中的线程将会在同步器释放时被唤醒。比如一个线程在获取互斥锁失败时就会被放入到等待队列中等待被唤醒，这也就是AQS中的Q——“Queued”的由来。</p>
+</li>
+<li><p>而类名中的第一个单词Abstract是因为AQS是一个抽象类，它的使用方法就是实现继承它的子类，然后使用这个子类类型的对象。在这个子类中我们会通过重写下列的五个方法中的一部分或者全部来指定这个同步器的行为策略：</p>
+<ul>
+<li>boolean tryAcquire(int arg)，独占式获取同步器，独占式指同一时间只能有一个线程获取到同步器；</li>
+<li>boolean tryRelease(int arg)，独占式释放同步器；</li>
+<li>boolean isHeldExclusively()，同步器是否被当前线程独占式地持有；</li>
+<li>int tryAcquireShared(int arg)，共享式获取同步器，共享式指的是同一时间可能有多个线程同时获取到同步器，但是可能会有数量的限制；</li>
+<li>boolean tryReleaseShared(int arg)，共享式释放同步器。<br>这五个方法之所以能指定同步器的行为，则是因为AQS中的其他方法就是通过对这五个方法的调用来实现的。比如在下面的acquire方法中就调用了tryAcquire来获取同步器，并且在被调用的acquireQueued方法内部也是通过tryAcquire方法来循环尝试获取同步器的。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public final void acquire(int arg) &#123;</span><br><span class="line">    // 1. 调用tryAcquire方法尝试获取锁</span><br><span class="line">    // 2. 如果获取失败(tryAcquire返回false)，则调用addWaiter方法将当前线程保存到等待队列中</span><br><span class="line">    // 3. 之后调用acquireQueued方法来循环执行“获取同步器 -&gt; 获取失败休眠 -&gt; 被唤醒重新获取”过程</span><br><span class="line">    //      直到成功获取到同步器返回false；或者被中断返回true</span><br><span class="line">    if (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        // 如果acquireQueued方法返回true说明线程被中断了</span><br><span class="line">        //   所以调用selfInterrupt方法中断当前线程</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="CountDownLatch的实现">CountDownLatch的实现<a class="post-anchor" href="#CountDownLatch的实现"></a></h3><ul>
+<li><p>CountDownLatch是一种典型的闭锁，比如我需要使用四个线程完成四种不同的计算，然后把四个线程的计算结果相加后返回，这种情况下主线程就需要等待四个完成不同任务的工作线程完成之后才能继续执行。那么我们就可以创建一个初始的count值为4的CountDownLatch，然后在每个工作线程完成任务时都对这个CountDownLatch执行一个countDown操作，这样CountDownLatch中的count值就会减1。当count值减到0时，主线程就会从阻塞中恢复，然后将四个任务的结果相加后返回。</p>
+</li>
+<li><p>下面是CountDownLath的几个常用方法：</p>
+<ul>
+<li>void await()，等待操作，如果count值目前已经是0了，那么就直接返回；否则就进入阻塞状态，等待count值变为0；</li>
+<li>void countDown()，减少计数操作，会让count减1。</li>
+<li>调用多次countDown()方法让count值变为0之后，被await()方法阻塞的线程就可以继续执行了。了解了CountDownLatch的基本用法之后我们就来看看这个闭锁到底是怎么实现的，首先，我们来看一下CountDownLatch中AQS的子类，内部类Sync的定义。</li>
+</ul>
+</li>
+</ul>
+<h3 id="CountDownLatch的内部Sync类">CountDownLatch的内部Sync类<a class="post-anchor" href="#CountDownLatch的内部Sync类"></a></h3><ul>
+<li><p>下面的代码是CountDownLatch中AQS的子类Sync的定义，Sync是CountDownLatch类中的一个内部类。在这个类中重写了AQS的tryAcquireShared和tryReleaseShared两个方法，这两个都是共享模式需要重写的方法，因为CountDownLatch在count值为0时可以被任意多个线程同时获取成功，所以应该实现共享模式的方法。</p>
+</li>
+<li><p>在CountDownLatch的Sync中使用了AQS的state值用来存放count值，在初始化时会把state值初始化为n。然后在调用tryReleaseShared时会将count值减1，但是因为这个方法可能会被多个线程同时调用，所以要用CAS操作保证更新操作的原子性，就像我们用AtomicInteger一样。在CAS失败时我们需要通过重试来保证把state减1，如果CAS成功时，即使有许多线程同时执行这个操作最后的结果也一定是正确的。在这里，tryReleaseShared方法的返回值表示这个释放操作是否可以让等待中的线程成功获取同步器，所以只有在count为0时才能返回true。</p>
+</li>
+<li><p>tryAcquireShared方法就比较简单了，直接返回state是否等于0即可，因为只有在CountDownLatch中的count值为0时所有希望获取同步器的线程才能获取成功并继续执行。如果count不为0，那么线程就需要进入阻塞状态，等到count值变为0才能继续执行。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">private static final class Sync extends AbstractQueuedSynchronizer &#123;</span><br><span class="line">    private static final long serialVersionUID = 4982264981922014374L;</span><br><span class="line"></span><br><span class="line">    // 构造器，初始化count值</span><br><span class="line">    // 在这个子类中把count值保存到了AQS的state中</span><br><span class="line">    Sync(int count) &#123;</span><br><span class="line">        setState(count);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 获取当前的count值</span><br><span class="line">    int getCount() &#123;</span><br><span class="line">        return getState();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 获取操作在state为0时会成功，否则失败</span><br><span class="line">    // tryAcquireShared失败时，线程会进入阻塞状态等待获取成功</span><br><span class="line">    protected int tryAcquireShared(int acquires) &#123;</span><br><span class="line">        return (getState() == 0) ? 1 : -1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 对闭锁执行释放操作减小计数值</span><br><span class="line">    protected boolean tryReleaseShared(int releases) &#123;</span><br><span class="line">        // 减小coun值，在count值归零时唤醒等待的线程</span><br><span class="line">        for (;;) &#123;</span><br><span class="line">            int c = getState();</span><br><span class="line"></span><br><span class="line">            // 如果计数已经归零，则直接释放失败</span><br><span class="line">            if (c == 0)</span><br><span class="line">                return false;</span><br><span class="line"></span><br><span class="line">            // 将计数值减1</span><br><span class="line">            int nextc = c-1;</span><br><span class="line">            // 为了线程安全，以CAS循环尝试更新</span><br><span class="line">            if (compareAndSetState(c, nextc))</span><br><span class="line">                return nextc == 0;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="CounDownLatch对Sync类对象的使用">CounDownLatch对Sync类对象的使用<a class="post-anchor" href="#CounDownLatch对Sync类对象的使用"></a></h3><ul>
+<li><p>看了CountDownLatch中的Sync内部类定义之后，我们再来看看CountDownLatch是如何使用这个内部类的。</p>
+</li>
+<li><p>在CountDownLatch的构造器中，初始化CountDownLatch对象时会同时在其内部初始化保存一个Sync类型的对象到sync字段用于之后的同步操作。并且传入Sync类构造器的count一定会大于等于0。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public CountDownLatch(int count) &#123;</span><br><span class="line">    if (count &lt; 0) throw new IllegalArgumentException(&quot;count &lt; 0&quot;);</span><br><span class="line">    this.sync = new Sync(count);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>有了Sync类型的对象之后，我们在await()方法里就可以直接调用sync的acquireSharedInterruptibly方法来获取同步器并陷入阻塞，等待count值变为0了。在AQS的acquireSharedInterruptibly方法中会在调用我们重写的tryAcquireShared方法获取失败时进入阻塞状态，直到CountDownLatch的count值变为0时才能成功获取到同步器。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void await() throws InterruptedException &#123;</span><br><span class="line">    // 调用sync对象的获取方法来进入锁等待</span><br><span class="line">    sync.acquireSharedInterruptibly(1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>而在CountDownLatch的另一个减少count值的重要方法countDown()中，我们同样是通过调用sync上的方法来实现具体的同步功能。在这里，AQS的releaseShared(1)方法中同样会调用我们在Sync类中重写的tryReleaseShared方法来执行释放操作，并在tryReleaseShared方法返回true时去唤醒等待队列中的阻塞等待线程，让它们在count值为0时能够继续执行。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public void countDown() &#123;</span><br><span class="line">    sync.releaseShared(1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>从上文中可以看出，CoundDownLatch中的各种功能都是通过内部类Sync来实现的，而这个Sync类就是一个继承自AQS的子类。通过在内部类Sync中重写了AQS的tryAcquireShared和tryReleaseShared两个方法，我们就指定了AQS的行为策略，使其能够符合我们对CountDownLatch功能的期望。这就是AQS的使用方法，下面我们来看一个大家可能会更熟悉的例子，来进一步了解AQS在独占模式下的用法。</li>
+</ul>
+<h3 id="ReentrantLock的实现">ReentrantLock的实现<a class="post-anchor" href="#ReentrantLock的实现"></a></h3><ul>
+<li><p>可重入锁ReentrantLock可以说是我们的老朋友了，从最早的synchronized关键字开始，我们就开始使用类似的功能了。可重入锁的特点主要有两点：</p>
+<ul>
+<li><p>同一时间只能有一个线程持有:</p>
+<p>  如果我想保护一段代码同一时间只能被一个线程所访问，比如对一个队列的插入操作。那么如果有一个线程已经获取了锁之后在修改队列了，那么其他也想要修改队列的线程就会陷入阻塞，等待之前的这个线程执行完成。</p>
+</li>
+<li><p>同一线程可以对一个锁重复获取成功多次</p>
+<p>  而如果一个线程对同一个队列执行了两个插入操作，那么第二次获取锁时仍然会成功，而不会被第一次成功获取到的锁所阻塞。</p>
+</li>
+</ul>
+</li>
+<li><p>ReentrantLock类的常用操作主要有三种：</p>
+<ul>
+<li><p>获取锁，一个线程一旦获取锁成功后就会阻塞其他线程获取同一个锁的操作，所以一旦获取失败，那么当前线程就会被阻塞</p>
+<p>最简单的获取锁方法就是调用public void lock()方法</p>
+</li>
+<li><p>释放锁，获取锁之后就要在使用完之后释放它，否则别的线程都将会因无法获取锁而被阻塞，所以我们一般会在finally中进行锁的释放操作</p>
+<p>可以通过调用ReentrantLock对象的unlock方法来释放锁</p>
+</li>
+<li><p>获取条件变量，条件变量是和互斥锁搭配使用的一种非常有用的数据结构</p>
+<p>我们可以通过Condition newCondition()方法来获取条件变量对象，然后调用条件变量对象上的await()、signal()、signalAll()方法来进行使用</p>
+</li>
+</ul>
+</li>
+</ul>
+
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
+            </div>
+            
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+          <a href="/2020/01/05/jvm参数/">jvm参数</a>
+        
+    </div>
+    <div class="item right">
+        
+          <a href="/2019/01/26/缓存相关/">缓存相关</a>
+        
+    </div>
+  </div>
+
+  
+
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/Java同步机制的底层实现/">https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/Java同步机制的底层实现/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>的博客，转载请注明出处！
+    </div>
+  </div>
+
+  <div id="comment"></div>
+
+  
+  
+</article>
+        <footer>
+          <div class="copyright">
+            ©2020
+            <a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a> Powered by <a href="https://hexo.io">Hexo</a> |
+            <a href="https://github.com/shixiaohu2206/hexo-theme-huhu">hexo-theme-huhu</a>
+          </div>
+          
+        </footer>
+      </div>
+    </div>
+  </body>
+  
+</html>
+<script type="text/javascript">
+                  window.HUHU_CONFIG = JSON.parse("{\"share\":[\"weibo\",\"weixin\",\"qqkongjian\",\"QQ\",\"douban\",\"facebook\",\"twitter\",\"google\"],\"service_worker\":{\"open\":false}}")
+                </script> <script type="text/javascript">window.addEventListener('load', function() {
+    
+    window.loadJs = function(d, m, a) {
+      var c = document.getElementsByTagName('head')[0] || document.head || document.documentElement
+      var b = document.createElement('script')
+      b.defer = true
+      b.setAttribute('type', 'text/javascript')
+      b.setAttribute('charset', 'UTF-8')
+      b.setAttribute('async', 'true')
+      b.setAttribute('src', d)
+      m && b.setAttribute('data-main', '/scripts/app-built')
+      if (typeof a === 'function') {
+        if (window.attachEvent) {
+          b.onreadystatechange = function() {
+            var e = b.readyState
+            if (e === 'loaded' || e === 'complete') {
+              b.onreadystatechange = null
+              a()
+            }
+          }
+        } else {
+          b.onload = a
+        }
+      }
+      c.appendChild(b)
+    }
+    window.loadJs && window.loadJs('https://cdn.bootcss.com/require.js/2.3.6/require.min.js', true, function() {require.config({"paths":{"util":"util","share":"share","search":"search","pagemap":"pagemap.min","registerSW":"registerSW","valine":"cdn/Valine.min","av":["https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min"],"pjax":["https://cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min"],"jquery":["https://cdn.bootcss.com/jquery/3.4.1/jquery.min"],"confirm":["https://cdn.bootcss.com/jquery-confirm/3.3.4/jquery-confirm.min"],"fancybox":["https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min"],"chart":["https://cdn.bootcss.com/Chart.js/2.8.0-rc.1/Chart.bundle.min"]},"map":{"*":{"css":"https://cdn.bootcss.com/require-css/0.1.10/css.min.js"}},"shim":{"fancybox":{"deps":["css!https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css"]},"confirm":{"deps":["css!https://cdn.bootcss.com/jquery-confirm/3.3.4/jquery-confirm.min.css"]},"chart":{"deps":["css!https://cdn.bootcss.com/Chart.js/2.8.0-rc.1/Chart.min.css"]}},"waitSeconds":3})})
+  })</script> <script type="text/javascript">
+                  ;(function() {
+                    var bp = document.createElement('script')
+                    var curProtocol = window.location.protocol.split(':')[0]
+                    if (curProtocol === 'https') {
+                      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js'
+                    } else {
+                      bp.src = 'http://push.zhanzhang.baidu.com/push.js'
+                    }
+                    var s = document.getElementsByTagName('script')[0]
+                    s.parentNode.insertBefore(bp, s)
+                  })()
+                </script> 

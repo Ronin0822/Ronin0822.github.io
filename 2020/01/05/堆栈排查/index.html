@@ -16,7 +16,7 @@
     <meta name="description" content="long time no see">
     
     <title>
-      Archives2018 - Ronin&#39;s blog
+      堆栈排查 - Ronin&#39;s blog
     </title>
     <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" href="/images/ironMan.png" type="image/x-icon">
@@ -58,7 +58,7 @@
           Home
         </a>
         
-        <a href="/archives" class="current">
+        <a href="/archives" class="">
           Archives
         </a>
         
@@ -112,7 +112,7 @@
             Home
           </a>
           
-          <a href="/archives" class="current">
+          <a href="/archives" class="">
             Archives
           </a>
           
@@ -161,43 +161,90 @@
     </div>
     <div id="container">
       <div class="main animated bounceInRight delay-0.7s">
-        <div id="archives">
-    
-        <div class="title">
-            Archives 
-             - 2018
-        </div>
-    
-
-
-
-
-    
-    
-    <section class="wrap">
-        <div class="meta">
-            <a href="/archives/2018">
-                2018
-            </a>
-        </div>
-        <div class="year">
-            
-            <article class="item">
-            <a href="/2018/12/05/hexo从零开始到搭建完整/" title="hexo从零开始到搭建完整">
-                <span>2018/12/05</span>
-                <span>hexo从零开始到搭建完整</span>
-            </a>
-            </article>
-            
-    
-        </div>
-    </section>
+        <article class="post-entry">
+    <div class="header">
       
-<div class="paginator">
-    <span class="page-number current">1</span>
-</div>
-</div>
+      <div class="title">堆栈排查</div>
+      <div class="meta">
+        <span class="item">
+          <span class="iconfont icon-time-circle"></span>
+          <span>2020/01/05</span>
+        </span>
 
+        
+
+        
+        
+        
+      </div>
+      <div>
+      </div>
+    </div>
+    <ul>
+<li>1.连上跳板机</li>
+<li>2.top查询进程找到pid</li>
+<li>3.执行 top -H -p 12798(对应的pid)</li>
+<li>4.找到几个相对比较耗资源的线程，使用jstack 查看堆内存</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstack 12798 |grep 12799的16进制 31ff</span><br></pre></td></tr></table></figure>
+<ul>
+<li>于是再次ssh 服务器 安装 arthas ,(Arthas 是Alibaba开源的Java诊断工具)<br>执行thread命令</li>
+</ul>
+
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
+            </div>
+            
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+          <a href="/2020/01/05/文件相关命令/">文件相关命令</a>
+        
+    </div>
+    <div class="item right">
+        
+          <a href="/2020/01/05/pgsql命令/">pgsql命令</a>
+        
+    </div>
+  </div>
+
+  
+
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/堆栈排查/">https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/堆栈排查/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>的博客，转载请注明出处！
+    </div>
+  </div>
+
+  <div id="comment"></div>
+
+  
+  
+</article>
         <footer>
           <div class="copyright">
             ©2020

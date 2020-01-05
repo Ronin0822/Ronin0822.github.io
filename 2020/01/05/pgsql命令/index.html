@@ -16,7 +16,7 @@
     <meta name="description" content="long time no see">
     
     <title>
-      Archives2018 - Ronin&#39;s blog
+      pgsql命令 - Ronin&#39;s blog
     </title>
     <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" href="/images/ironMan.png" type="image/x-icon">
@@ -24,6 +24,11 @@
   </head>
   <body>
     <canvas id="pagemap"></canvas>
+    
+    <div id="post-toc" class="animated hiddenToc hide">
+      <span class="title">Toc</span>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#查询所有表"><span class="toc-text">查询所有表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在psql状态下查询表结构"><span class="toc-text">在psql状态下查询表结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sql方式查询表结构"><span class="toc-text">sql方式查询表结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查询索引"><span class="toc-text">查询索引</span></a></li></ol>
+    </div>
     
     <div id="fixed-menu-wrap">
       <span class="iconfont icon-sousuo search-box menu-reset"></span>
@@ -58,7 +63,7 @@
           Home
         </a>
         
-        <a href="/archives" class="current">
+        <a href="/archives" class="">
           Archives
         </a>
         
@@ -112,7 +117,7 @@
             Home
           </a>
           
-          <a href="/archives" class="current">
+          <a href="/archives" class="">
             Archives
           </a>
           
@@ -161,43 +166,84 @@
     </div>
     <div id="container">
       <div class="main animated bounceInRight delay-0.7s">
-        <div id="archives">
-    
-        <div class="title">
-            Archives 
-             - 2018
-        </div>
-    
-
-
-
-
-    
-    
-    <section class="wrap">
-        <div class="meta">
-            <a href="/archives/2018">
-                2018
-            </a>
-        </div>
-        <div class="year">
-            
-            <article class="item">
-            <a href="/2018/12/05/hexo从零开始到搭建完整/" title="hexo从零开始到搭建完整">
-                <span>2018/12/05</span>
-                <span>hexo从零开始到搭建完整</span>
-            </a>
-            </article>
-            
-    
-        </div>
-    </section>
+        <article class="post-entry">
+    <div class="header">
       
-<div class="paginator">
-    <span class="page-number current">1</span>
-</div>
-</div>
+      <div class="title">pgsql命令</div>
+      <div class="meta">
+        <span class="item">
+          <span class="iconfont icon-time-circle"></span>
+          <span>2020/01/05</span>
+        </span>
 
+        
+
+        
+        
+        
+      </div>
+      <div>
+      </div>
+    </div>
+    <h3 id="查询所有表">查询所有表<a class="post-anchor" href="#查询所有表"></a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM pg_tables;</span><br></pre></td></tr></table></figure>
+<h3 id="在psql状态下查询表结构">在psql状态下查询表结构<a class="post-anchor" href="#在psql状态下查询表结构"></a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\d tablename</span><br></pre></td></tr></table></figure>
+<h3 id="sql方式查询表结构">sql方式查询表结构<a class="post-anchor" href="#sql方式查询表结构"></a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">SELECT a.attnum,</span><br><span class="line">a.attname AS field,</span><br><span class="line">t.typname AS type,</span><br><span class="line">a.attlen AS length,</span><br><span class="line">a.atttypmod AS lengthvar,</span><br><span class="line">a.attnotnull AS notnull,</span><br><span class="line">b.description AS comment</span><br><span class="line">FROM pg_class c,</span><br><span class="line">pg_attribute a</span><br><span class="line">LEFT OUTER JOIN pg_description b ON a.attrelid=b.objoid AND a.attnum = b.objsubid,</span><br><span class="line">pg_type t</span><br><span class="line">WHERE c.relname = &apos;dwp_dec_sevenstar_w&apos;</span><br><span class="line">and a.attnum &gt; 0</span><br><span class="line">and a.attrelid = c.oid</span><br><span class="line">and a.atttypid = t.oid</span><br><span class="line">ORDER BY a.attnum;</span><br></pre></td></tr></table></figure>
+<h3 id="查询索引">查询索引<a class="post-anchor" href="#查询索引"></a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">select</span><br><span class="line">A.SCHEMANAME,</span><br><span class="line">A.TABLENAME,</span><br><span class="line">A.INDEXNAME,</span><br><span class="line">A.TABLESPACE,</span><br><span class="line">A.INDEXDEF,</span><br><span class="line">B.AMNAME,</span><br><span class="line">C.INDEXRELID,</span><br><span class="line">C.INDNATTS,</span><br><span class="line">C.INDISUNIQUE,</span><br><span class="line">C.INDISPRIMARY,</span><br><span class="line">C.INDISCLUSTERED,</span><br><span class="line">D.DESCRIPTION</span><br><span class="line">from</span><br><span class="line">PG_AM B left join PG_CLASS F on</span><br><span class="line">B.OID = F.RELAM left join PG_STAT_ALL_INDEXES E on</span><br><span class="line">F.OID = E.INDEXRELID left join PG_INDEX C on</span><br><span class="line">E.INDEXRELID = C.INDEXRELID left outer join PG_DESCRIPTION D on</span><br><span class="line">C.INDEXRELID = D.OBJOID,</span><br><span class="line">PG_INDEXES A</span><br><span class="line">where</span><br><span class="line">A.SCHEMANAME = E.SCHEMANAME</span><br><span class="line">and A.TABLENAME = E.RELNAME</span><br><span class="line">and A.INDEXNAME = E.INDEXRELNAME</span><br><span class="line">and E.SCHEMANAME = &apos;dx2&apos;</span><br><span class="line">and E.RELNAME = &apos;dwp_dec_sevenstar_w&apos;;</span><br></pre></td></tr></table></figure>
+
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
+            </div>
+            
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+          <a href="/2020/01/05/堆栈排查/">堆栈排查</a>
+        
+    </div>
+    <div class="item right">
+        
+          <a href="/2020/01/05/Web 通信/">Web 通信</a>
+        
+    </div>
+  </div>
+
+  
+
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/pgsql命令/">https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/pgsql命令/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>的博客，转载请注明出处！
+    </div>
+  </div>
+
+  <div id="comment"></div>
+
+  
+  
+</article>
         <footer>
           <div class="copyright">
             ©2020

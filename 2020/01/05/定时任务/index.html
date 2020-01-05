@@ -16,7 +16,7 @@
     <meta name="description" content="long time no see">
     
     <title>
-      Archives2018 - Ronin&#39;s blog
+      定时任务 - Ronin&#39;s blog
     </title>
     <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" href="/images/ironMan.png" type="image/x-icon">
@@ -58,7 +58,7 @@
           Home
         </a>
         
-        <a href="/archives" class="current">
+        <a href="/archives" class="">
           Archives
         </a>
         
@@ -112,7 +112,7 @@
             Home
           </a>
           
-          <a href="/archives" class="current">
+          <a href="/archives" class="">
             Archives
           </a>
           
@@ -161,43 +161,95 @@
     </div>
     <div id="container">
       <div class="main animated bounceInRight delay-0.7s">
-        <div id="archives">
-    
-        <div class="title">
-            Archives 
-             - 2018
-        </div>
-    
-
-
-
-
-    
-    
-    <section class="wrap">
-        <div class="meta">
-            <a href="/archives/2018">
-                2018
-            </a>
-        </div>
-        <div class="year">
-            
-            <article class="item">
-            <a href="/2018/12/05/hexo从零开始到搭建完整/" title="hexo从零开始到搭建完整">
-                <span>2018/12/05</span>
-                <span>hexo从零开始到搭建完整</span>
-            </a>
-            </article>
-            
-    
-        </div>
-    </section>
+        <article class="post-entry">
+    <div class="header">
       
-<div class="paginator">
-    <span class="page-number current">1</span>
-</div>
-</div>
+      <div class="title">定时任务</div>
+      <div class="meta">
+        <span class="item">
+          <span class="iconfont icon-time-circle"></span>
+          <span>2020/01/05</span>
+        </span>
 
+        
+
+        
+        
+        
+      </div>
+      <div>
+      </div>
+    </div>
+    <ul>
+<li>定时任务可以选择使用netty包里的HashedWheelTimer<br>netty毕竟是一个大名鼎鼎的框架，广泛使用于业界。它有许多心跳检测等定时任务，使用延时队列来实现。HashedWheelTimer底层数据结构依然是使用DelayedQueue。加上一种叫做时间轮的算法来实现。</li>
+<li>关于时间轮算法，有点类似于HashMap。在new 一个HashedWheelTimer实例的时候，可以传入几个参数。<ul>
+<li>第一，一个时间长度，这个时间长度跟具体任务何时执行没有关系，但是跟执行精度有关。这个时间可以看作手表的指针循环一圈的长度。</li>
+<li>然后第二，刻度数。这个可以看作手表的刻度。比如第一个参数为24小时，刻度数为12，那么每一个刻度表示2小时。时间精度只能到两小时。时间长度/刻度数值越大，精度越大。</li>
+<li>然后添加一个任务的时候，根据hash算法得到hash值并对刻度数求模得到一个下标，这个下标就是刻度的位置。</li>
+<li>然而有一些任务的执行周期超过了第一个参数，比如超过了24小时，就会得到一个圈数round。<br>简点说，添加一个任务时会根据任务得到一个hash值，并根据时间轮长度和刻度得到一个商值round和模index，比如时间长度24小时，刻度为12，延迟时间为32小时，那么round=1,index=8。时间轮从开启之时起每24/12个时间走一个指针，即index+1,第一圈round=0。当走到第7个指针时，此时index=7，此时刚才的任务并不能执行，因为刚才的任务round=1,必须要等到下一轮index=7的时候才能执行。</li>
+<li>使用方法：</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">HashedWheelTimer timer = new HashedWheelTimer(24, TimeUnit.SECONDS,12);</span><br><span class="line">TimerTask task = new TimerTask() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run(Timeout timeout) throws Exception &#123;</span><br><span class="line">        System.out.println(&quot;任务执行&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">timer.newTimeout(task,1000,TimeUnit.SECONDS);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>但是没有实现持久化和分布式。持久化可以借助数据库来达到。分布式的话还是使用消息中间件吧。RabbitMq听说已经可以借助某些参数实现</li>
+</ul>
+
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
+            </div>
+            
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+          <a href="/2020/01/05/redis异步队列/">redis异步队列</a>
+        
+    </div>
+    <div class="item right">
+        
+          <a href="/2020/01/05/guava工具/">Guava包中工具类</a>
+        
+    </div>
+  </div>
+
+  
+
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/定时任务/">https://github.com/Ronin0822/Ronin0822.github.io.git/2020/01/05/定时任务/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="https://github.com/Ronin0822/Ronin0822.github.io.git">如影</a>的博客，转载请注明出处！
+    </div>
+  </div>
+
+  <div id="comment"></div>
+
+  
+  
+</article>
         <footer>
           <div class="copyright">
             ©2020
